@@ -8,6 +8,9 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -49,7 +52,7 @@ const Profile = () => {
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setFileUploadPercentage(Math.round(progress));
         },
-        (error) => {
+        () => {
           setFileUploadError(true);
         },
         () => {
@@ -95,6 +98,25 @@ const Profile = () => {
     } catch (err) {
       console.error(err);
       dispatch(updateUserFailure(error.message));
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        return dispatch(deleteUserFailure(data.message));
+      }
+
+      dispatch(deleteUserSuccess());
+    } catch (err) {
+      console.error(err);
+      dispatch(deleteUserFailure(err.message));
     }
   };
 
@@ -170,7 +192,11 @@ const Profile = () => {
       </p>
 
       <div className="flex justify-between mt-5">
-        <button type="button" className="text-red-700">
+        <button
+          type="button"
+          className="text-red-700"
+          onClick={handleDeleteUser}
+        >
           Delete Account
         </button>
         <button type="button" className="text-red-700">
