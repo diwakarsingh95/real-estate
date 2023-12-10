@@ -70,7 +70,17 @@ export const google = async (req, res, next) => {
         .json(userInfo);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     next(error);
+  }
+};
+
+export const signOut = (req, res, next) => {
+  try {
+    res.clearCookie("access_token");
+    res.status(200).json("User has been logged out!");
+  } catch (err) {
+    console.error(err);
+    next(err);
   }
 };
