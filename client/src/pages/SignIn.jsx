@@ -74,7 +74,7 @@ const SignIn = () => {
         <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
-        <p>Don't have an account?</p>
+        <p>Don&apos;t have an account?</p>
         <Link to="/sign-up">
           <span className="text-blue-700">Sign Up</span>
         </Link>

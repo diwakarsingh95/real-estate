@@ -23,7 +23,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const { currentUser, loading, error } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({});
-  const [file, setFile] = useState(undefined);
+  const [file, setFile] = useState(null);
   const [fileUploadPercentage, setFileUploadPercentage] = useState(0);
   const [fileUploadSuccess, setFileUploadSuccess] = useState(false);
   const [fileUploadError, setFileUploadError] = useState(false);
@@ -39,6 +39,8 @@ const Profile = () => {
     setFileUploadPercentage(0);
     fileInputRef && fileInputRef.current.click();
   };
+
+  const handleFileChange = (e) => setFile(e.target.files[0]);
 
   const handleFileUpload = (file) => {
     try {
@@ -148,7 +150,7 @@ const Profile = () => {
           ref={fileInputRef}
           accept="image/*"
           hidden
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={handleFileChange}
         />
         <button
           type="button"
