@@ -24,7 +24,6 @@ const CreateListing = () => {
     regularPrice: 50,
     discountPrice: 0,
     offer: false,
-    sale: false,
     parking: false,
     furnished: false,
   });
