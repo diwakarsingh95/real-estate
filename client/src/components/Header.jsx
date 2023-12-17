@@ -23,27 +23,25 @@ const Header = () => {
           <FaSearch className="text-slate-600" />
         </form>
         <ul className="flex gap-4">
-          <Link to="/">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
-              Home
-            </li>
-          </Link>
-          <Link to="/about">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
-              About
-            </li>
-          </Link>
-          <Link to={currentUser ? "/profile" : "/sign-in"}>
-            {currentUser ? (
-              <img
-                className="rounded-full h-7 w-7 object-cover"
-                src={currentUser.avatar}
-                alt="Profile"
-              />
-            ) : (
-              <li className="text-slate-700 hover:underline">Sign in</li>
-            )}
-          </Link>
+          <li className="hidden sm:inline text-slate-700 hover:underline">
+            <Link to="/">Home</Link>
+          </li>
+          <li className="hidden sm:inline text-slate-700 hover:underline">
+            <Link to="/about">About</Link>
+          </li>
+          <li className="text-slate-700 hover:underline">
+            <Link to={currentUser ? "/profile" : "/sign-in"}>
+              {currentUser ? (
+                <img
+                  className="rounded-full h-7 w-7 object-cover"
+                  src={currentUser.avatar}
+                  alt="Profile"
+                />
+              ) : (
+                "Sign in"
+              )}
+            </Link>
+          </li>
         </ul>
       </div>
     </header>
