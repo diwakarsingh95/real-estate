@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
-import { errorHandler } from "../utils/error.js";
+import { errorHandler } from "../utils/errorHandler.js";
 import User from "../models/user.model.js";
 
 export const updateUser = async (req, res, next) => {
