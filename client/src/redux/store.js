@@ -2,9 +2,11 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist/es";
 import storage from "redux-persist/lib/storage";
 import userReducer from "./user/userSlice";
+import { listingsApi } from "./api/apiSlice";
 
 const rootReducer = combineReducers({
   user: userReducer,
+  [listingsApi.reducerPath]: listingsApi.reducer,
 });
 
 const persistConfig = {
@@ -20,7 +22,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat(listingsApi.middleware),
 });
 
 export const persistor = persistStore(store);
