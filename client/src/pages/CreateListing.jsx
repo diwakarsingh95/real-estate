@@ -6,11 +6,18 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { app } from "../firebase";
+import {
+  useCreateListingMutation,
+  useGetListingsQuery,
+} from "../redux/api/apiSlice";
 
 const CreateListing = () => {
   const { currentUser } = useSelector((state) => state.user);
+  useGetListingsQuery(currentUser._id);
+  const [createListing, { isLoading: isCreating, error: creationError }] =
+    useCreateListingMutation();
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
@@ -28,7 +35,6 @@ const CreateListing = () => {
     furnished: false,
   });
   const [formError, setFormError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageUploadError, setImageUploadError] = useState("");
   const [uploadingImages, setUploadingImages] = useState(false);
 
@@ -107,28 +113,14 @@ const CreateListing = () => {
         return setFormError(
           "Regular price can not be less than discounted price."
         );
-
-      setIsSubmitting(true);
       setFormError(false);
-
-      const res = await fetch("api/listing/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...formData, userRef: currentUser._id }),
+      const { data } = await createListing({
+        ...formData,
+        userRef: currentUser._id,
       });
-      const data = await res.json();
-      setIsSubmitting(false);
-
-      if (data.success === false) {
-        setFormError(data.message);
-      }
-
       navigate(`/listing/${data._id}`);
     } catch (err) {
       console.error(err);
-      setIsSubmitting(false);
     }
   };
 
@@ -304,7 +296,7 @@ const CreateListing = () => {
             <button
               type="button"
               className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80"
-              disabled={isSubmitting || uploadingImages}
+              disabled={isCreating || uploadingImages}
               onClick={handleImageFilesUpload}
             >
               {uploadingImages ? "Uploading..." : "Upload"}
@@ -326,7 +318,7 @@ const CreateListing = () => {
               <button
                 className="p-3 text-red-700 rounded-lg uppercase hover:opacity-75"
                 onClick={() => handleRemoveImage(index)}
-                disabled={isSubmitting || uploadingImages}
+                disabled={isCreating || uploadingImages}
               >
                 Delete
               </button>
@@ -334,11 +326,16 @@ const CreateListing = () => {
           ))}
           <button
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-            disabled={isSubmitting || uploadingImages}
+            disabled={isCreating || uploadingImages}
           >
-            {isSubmitting ? "Creating..." : "Create Listing"}
+            {isCreating ? "Creating..." : "Create Listing"}
           </button>
-          {!!formError && <p className="text-red-700 text-sm">{formError}</p>}
+          {!!formError ||
+            (creationError && (
+              <p className="text-red-700 text-sm">
+                {formError || creationError}
+              </p>
+            ))}
         </div>
       </form>
     </main>

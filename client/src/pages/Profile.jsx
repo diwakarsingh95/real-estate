@@ -18,6 +18,8 @@ import {
   updateUserStart,
   updateUserSuccess,
 } from "../redux/user/userSlice";
+import { listingsApi } from "../redux/api/apiSlice";
+import clsx from "clsx";
 
 const Profile = () => {
   const fileInputRef = useRef();
@@ -52,6 +54,7 @@ const Profile = () => {
             setFileUploadSuccess(true);
             getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
               setFormData({ ...formData, avatar: downloadUrl });
+              setFile(null);
             });
           }
         );
@@ -63,13 +66,15 @@ const Profile = () => {
   );
 
   const handleFileInputClick = () => {
-    setFileUploadError(false);
-    setFileUploadSuccess(false);
-    setFileUploadPercentage(0);
     fileInputRef && fileInputRef.current.click();
   };
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
+  const handleFileChange = (e) => {
+    setFileUploadError(false);
+    setFileUploadPercentage(0);
+    setFileUploadSuccess(false);
+    setFile(e.target.files[0]);
+  };
 
   const handleChange = (e) => {
     setFormData((prevState) => ({
@@ -117,6 +122,7 @@ const Profile = () => {
         return dispatch(deleteUserFailure(data.message));
       }
 
+      dispatch(listingsApi.util.invalidateTags(["Listings"]));
       dispatch(deleteUserSuccess());
     } catch (err) {
       console.error(err);
@@ -134,6 +140,7 @@ const Profile = () => {
         return dispatch(signOutUserFailure(data.message));
       }
 
+      dispatch(listingsApi.util.invalidateTags(["Listings"]));
       dispatch(deleteUserSuccess());
     } catch (err) {
       console.error(err);
@@ -153,6 +160,15 @@ const Profile = () => {
 
     return () => clearTimeout(timeoutId);
   }, [userUpdateSuccess]);
+
+  useEffect(() => {
+    let timeoutId;
+    if (fileUploadSuccess) {
+      timeoutId = setTimeout(() => setFileUploadSuccess(false), 2000);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [fileUploadSuccess]);
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -174,7 +190,12 @@ const Profile = () => {
             onClick={handleFileInputClick}
             src={formData.avatar || currentUser.avatar}
             alt="Profile"
-            className="rounded-full h-24 w-24 object-cover"
+            className={clsx(
+              "rounded-full h-24 w-24 object-cover",
+              fileUploadPercentage > 0 &&
+                fileUploadPercentage < 100 &&
+                "opacity-75"
+            )}
           />
         </button>
         <p className="text-sm self-center">
@@ -183,8 +204,8 @@ const Profile = () => {
               Error Image Upload (image size must be less than 2 mb).
             </span>
           ) : fileUploadPercentage > 0 && fileUploadPercentage < 100 ? (
-            <span className="text-slate-700">
-              Uploading {fileUploadPercentage}%
+            <span className="text-sky-600">
+              Uploading... {fileUploadPercentage}%
             </span>
           ) : fileUploadSuccess ? (
             <span className="text-green-700">Image successfully uploaded.</span>
