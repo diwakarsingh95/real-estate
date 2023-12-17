@@ -145,6 +145,15 @@ const Profile = () => {
     if (file) handleFileUpload(file);
   }, [file, handleFileUpload]);
 
+  useEffect(() => {
+    let timeoutId;
+    if (userUpdateSuccess) {
+      timeoutId = setTimeout(() => setUserUpdateSuccess(false), 2000);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [userUpdateSuccess]);
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -187,6 +196,7 @@ const Profile = () => {
           placeholder="Username"
           className="border p-3 rounded-lg"
           defaultValue={currentUser.username}
+          required
           onChange={handleChange}
         />
         <input
@@ -195,6 +205,7 @@ const Profile = () => {
           placeholder="Email"
           className="border p-3 rounded-lg"
           defaultValue={currentUser.email}
+          required
           onChange={handleChange}
         />
         <input
@@ -204,6 +215,10 @@ const Profile = () => {
           className="border p-3 rounded-lg"
           onChange={handleChange}
         />
+        {error && <p className="text-red-700">{error}</p>}
+        {userUpdateSuccess && (
+          <p className="text-green-700">User updated successfully!</p>
+        )}
         <button
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-95"
           disabled={loading}
@@ -216,11 +231,13 @@ const Profile = () => {
         >
           Create Listing
         </Link>
+        <Link
+          to="/listings"
+          className="block bg-cyan-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
+        >
+          Show Listings
+        </Link>
       </form>
-      <p className="text-red-700 mt-5">{error ? error : ""}</p>
-      <p className="text-green-700 mt-5">
-        {userUpdateSuccess ? "User updated successfully!" : ""}
-      </p>
 
       <div className="flex justify-between mt-5">
         <button
