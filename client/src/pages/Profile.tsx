@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   getDownloadURL,
@@ -7,6 +6,7 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import clsx from "clsx";
 import { app } from "../firebase";
 import {
   deleteUserFailure,
@@ -19,21 +19,26 @@ import {
   updateUserSuccess,
 } from "../redux/user/userSlice";
 import { listingsApi } from "../redux/api/apiSlice";
-import clsx from "clsx";
+import { useAppDispatch, useAppSelector } from "../hooks";
 
 const Profile = () => {
-  const fileInputRef = useRef();
-  const dispatch = useDispatch();
-  const { currentUser, loading, error } = useSelector((state) => state.user);
-  const [formData, setFormData] = useState({});
-  const [file, setFile] = useState(null);
+  const fileInputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const dispatch = useAppDispatch();
+  const { currentUser, loading, error } = useAppSelector((state) => state.user);
+  const [formData, setFormData] = useState({
+    username: currentUser?.username,
+    email: currentUser?.email,
+    password: "",
+    avatar: currentUser?.avatar,
+  });
+  const [file, setFile] = useState<File | null>();
   const [fileUploadPercentage, setFileUploadPercentage] = useState(0);
   const [fileUploadSuccess, setFileUploadSuccess] = useState(false);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [userUpdateSuccess, setUserUpdateSuccess] = useState(false);
 
   const handleFileUpload = useCallback(
-    (file) => {
+    (file: File) => {
       try {
         const storage = getStorage(app);
         const fileName = new Date().getTime() + file.name;
@@ -66,35 +71,51 @@ const Profile = () => {
   );
 
   const handleFileInputClick = () => {
-    fileInputRef && fileInputRef.current.click();
+    fileInputRef.current && fileInputRef.current.click();
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.currentTarget.files) {
+      return;
+    }
+
     setFileUploadError(false);
     setFileUploadPercentage(0);
     setFileUploadSuccess(false);
-    setFile(e.target.files[0]);
+    setFile(e.currentTarget.files[0]);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUserUpdateSuccess(false);
 
     try {
+      const { username, email, avatar, password } = formData;
+
+      if (!username || !email) return;
+
+      const updateData = {
+        email,
+        username,
+      } as Partial<typeof formData>;
+
+      if (password) updateData.password = password;
+      if (avatar) updateData.avatar = avatar;
+
       dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`/api/user/update/${currentUser?._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updateData),
       });
       const data = await res.json();
 
@@ -106,7 +127,9 @@ const Profile = () => {
       setUserUpdateSuccess(true);
     } catch (err) {
       console.error(err);
-      dispatch(updateUserFailure(error.message));
+      if (err instanceof Error) {
+        dispatch(updateUserFailure(err.message));
+      } else dispatch(updateUserFailure("Something went wrong."));
     }
   };
 
@@ -114,7 +137,7 @@ const Profile = () => {
     try {
       dispatch(deleteUserStart());
 
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+      const res = await fetch(`/api/user/delete/${currentUser?._id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -126,7 +149,9 @@ const Profile = () => {
       dispatch(deleteUserSuccess());
     } catch (err) {
       console.error(err);
-      dispatch(deleteUserFailure(err.message));
+      if (err instanceof Error) {
+        dispatch(deleteUserFailure(err.message));
+      } else dispatch(deleteUserFailure("Something went wrong."));
     }
   };
 
@@ -144,7 +169,9 @@ const Profile = () => {
       dispatch(deleteUserSuccess());
     } catch (err) {
       console.error(err);
-      dispatch(signOutUserFailure(err.message));
+      if (err instanceof Error) {
+        dispatch(signOutUserFailure(err.message));
+      } else dispatch(signOutUserFailure("Something went wrong."));
     }
   };
 
@@ -153,7 +180,7 @@ const Profile = () => {
   }, [file, handleFileUpload]);
 
   useEffect(() => {
-    let timeoutId;
+    let timeoutId: ReturnType<typeof setTimeout>;
     if (userUpdateSuccess) {
       timeoutId = setTimeout(() => setUserUpdateSuccess(false), 2000);
     }
@@ -162,7 +189,7 @@ const Profile = () => {
   }, [userUpdateSuccess]);
 
   useEffect(() => {
-    let timeoutId;
+    let timeoutId: ReturnType<typeof setTimeout>;
     if (fileUploadSuccess) {
       timeoutId = setTimeout(() => setFileUploadSuccess(false), 2000);
     }
@@ -188,7 +215,7 @@ const Profile = () => {
         >
           <img
             onClick={handleFileInputClick}
-            src={formData.avatar || currentUser.avatar}
+            src={formData.avatar || currentUser?.avatar}
             alt="Profile"
             className={clsx(
               "rounded-full h-24 w-24 object-cover",
@@ -216,18 +243,20 @@ const Profile = () => {
           type="text"
           placeholder="Username"
           className="border p-3 rounded-lg"
-          defaultValue={currentUser.username}
+          defaultValue={currentUser?.username}
           required
           onChange={handleChange}
+          autoComplete="username"
         />
         <input
           id="email"
           type="email"
           placeholder="Email"
           className="border p-3 rounded-lg"
-          defaultValue={currentUser.email}
+          defaultValue={currentUser?.email}
           required
           onChange={handleChange}
+          autoComplete="email"
         />
         <input
           id="password"

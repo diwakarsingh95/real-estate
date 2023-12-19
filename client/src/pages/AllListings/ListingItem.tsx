@@ -1,9 +1,9 @@
-/* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
 import clsx from "clsx";
 import { useDeleteListingMutation } from "../../redux/api/apiSlice";
+import { Listing } from "../../services/types";
 
-const ListingItem = ({ data }) => {
+const ListingItem = ({ data }: { data: Listing }) => {
   const [deleteListing, { isLoading }] = useDeleteListingMutation();
 
   const handleDelete = () => deleteListing(data._id);
@@ -16,7 +16,7 @@ const ListingItem = ({ data }) => {
         isLoading && "pointer-events-none opacity-70 transition-opacity"
       )}
     >
-      <Link to={`/listing/${data._id}`}>
+      <Link to={`/listings/${data._id}`}>
         <img
           src={data.imageUrls[0]}
           alt="listing cover"

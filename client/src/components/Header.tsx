@@ -1,9 +1,9 @@
 import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../hooks";
 
 const Header = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser } = useAppSelector((state) => state.user);
 
   return (
     <header className="bg-slate-200 shadow-md">
@@ -16,8 +16,9 @@ const Header = () => {
         </Link>
         <form className="bg-slate-100 p-3 rounded-lg flex items-center">
           <input
-            type="text"
+            type="search"
             placeholder="Search..."
+            name="search"
             className="bg-transparent focus:outline-none w-24 sm:w-64"
           />
           <FaSearch className="text-slate-600" />

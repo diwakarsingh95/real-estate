@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   signInFailure,
@@ -7,22 +6,24 @@ import {
   signInSuccess,
 } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { getErrorMessage } from "../services/helpers";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector((state) => state.user);
+  const { loading, error } = useAppSelector((state) => state.user);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -43,7 +44,8 @@ const SignIn = () => {
       navigate("/");
     } catch (err) {
       console.error(err);
-      dispatch(signInFailure(err.message));
+      const errMsg = getErrorMessage(err);
+      dispatch(signInFailure(errMsg));
     }
   };
 

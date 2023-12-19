@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Listing } from "../../services/types";
 
 export const listingsApi = createApi({
   reducerPath: "listings",
   baseQuery: fetchBaseQuery({ baseUrl: "/api/listing" }),
   tagTypes: ["Listings"],
   endpoints: (builder) => ({
-    getListings: builder.query({
+    getListings: builder.query<Listing[], string>({
       query: () => "",
       keepUnusedDataFor: 300,
       providesTags: ["Listings"],
@@ -14,7 +15,7 @@ export const listingsApi = createApi({
       //     ? [...result.map(({ _id }) => ({ type: "Listings", id: _id }))]
       //     : [],
     }),
-    createListing: builder.mutation({
+    createListing: builder.mutation<Listing, Partial<Listing>>({
       query: (body) => ({
         url: "create",
         method: "POST",
@@ -23,13 +24,13 @@ export const listingsApi = createApi({
       async onQueryStarted({ userRef }, { dispatch, queryFulfilled }) {
         let updateResult;
         try {
-          const { data: createdPost } = await queryFulfilled;
+          const { data: createdListing } = await queryFulfilled;
           updateResult = dispatch(
             listingsApi.util.updateQueryData(
               "getListings",
-              userRef,
+              userRef as string,
               (prevListings) => {
-                prevListings.push(createdPost);
+                prevListings.push(createdListing);
               }
             )
           );
@@ -60,8 +61,8 @@ export const listingsApi = createApi({
               }
             )
           );
-        } catch {
-          console.log("Error...");
+        } catch (err) {
+          console.error("Listing delete Error...", err);
         }
       },
       // invalidatesTags: (result, error, id) => [{ type: 'Listings', id }],

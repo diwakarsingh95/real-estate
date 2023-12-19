@@ -1,21 +1,22 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getErrorMessage } from "../services/helpers";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -32,12 +33,12 @@ const SignUp = () => {
         setError(data.message);
         return;
       }
-      setError(null);
+      setError("");
       navigate("/sign-in");
     } catch (err) {
       console.error(err);
       setLoading(false);
-      setError(err.message);
+      setError(getErrorMessage(err));
     }
   };
 

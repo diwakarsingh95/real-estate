@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
 import {
   getDownloadURL,
   getStorage,
@@ -12,16 +11,17 @@ import {
   useCreateListingMutation,
   useGetListingsQuery,
 } from "../redux/api/apiSlice";
+import { useAppSelector } from "../hooks";
+import { getErrorMessage } from "../services/helpers";
 
 const CreateListing = () => {
-  const { currentUser } = useSelector((state) => state.user);
-  useGetListingsQuery(currentUser._id);
-  const [createListing, { isLoading: isCreating, error: creationError }] =
-    useCreateListingMutation();
+  const { currentUser } = useAppSelector((state) => state.user);
+  useGetListingsQuery(currentUser?._id || "", { skip: !currentUser?._id });
+  const [createListing, { isLoading: isCreating }] = useCreateListingMutation();
   const navigate = useNavigate();
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<FileList | null>(null);
   const [formData, setFormData] = useState({
-    imageUrls: [],
+    imageUrls: [] as string[],
     name: "",
     description: "",
     address: "",
@@ -34,17 +34,22 @@ const CreateListing = () => {
     parking: false,
     furnished: false,
   });
-  const [formError, setFormError] = useState(false);
+  const [formError, setFormError] = useState("");
   const [imageUploadError, setImageUploadError] = useState("");
   const [uploadingImages, setUploadingImages] = useState(false);
 
-  const handleImageFilesChange = (e) => setFiles(e.target.files);
+  const handleImageFilesChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setFiles(e.currentTarget.files);
 
   const handleImageFilesUpload = async () => {
-    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+    if (
+      files &&
+      files.length > 0 &&
+      files.length + formData.imageUrls.length < 7
+    ) {
       try {
         setUploadingImages(true);
-        setImageUploadError(false);
+        setImageUploadError("");
         const imageUrls = await Promise.all(
           Array.from(files).map((file) => {
             return storeImage(file);
@@ -65,7 +70,7 @@ const CreateListing = () => {
     }
   };
 
-  const storeImage = async (file) => {
+  const storeImage = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const storage = getStorage(app);
       const fileName = new Date().getTime() + file.name;
@@ -87,24 +92,30 @@ const CreateListing = () => {
     });
   };
 
-  const handleRemoveImage = (index) => {
+  const handleRemoveImage = (index: number) => {
     setFormData({
       ...formData,
       imageUrls: formData.imageUrls.filter((_, i) => i !== index),
     });
   };
 
-  const handleChange = (e) => {
-    if (e.target.type === "radio")
-      setFormData({ ...formData, type: e.target.value });
-    else if (e.target.type === "checkbox")
-      setFormData({ ...formData, [e.target.id]: e.target.checked });
-    else if (e.target.type === "number")
-      setFormData({ ...formData, [e.target.id]: parseFloat(e.target.value) });
-    else setFormData({ ...formData, [e.target.id]: e.target.value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { id, type, value } = e.currentTarget;
+
+    if (type === "radio") setFormData({ ...formData, type: e.target.value });
+    else if (type === "checkbox")
+      setFormData({
+        ...formData,
+        [id]: (e.currentTarget as HTMLInputElement).checked,
+      });
+    else if (type === "number")
+      setFormData({ ...formData, [id]: parseFloat(value) });
+    else setFormData({ ...formData, [id]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       if (!formData.imageUrls.length)
@@ -113,14 +124,17 @@ const CreateListing = () => {
         return setFormError(
           "Regular price can not be less than discounted price."
         );
-      setFormError(false);
-      const { data } = await createListing({
+      setFormError("");
+      const response = await createListing({
         ...formData,
-        userRef: currentUser._id,
+        userRef: currentUser?._id,
       });
-      navigate(`/listing/${data._id}`);
+      if ("error" in response) throw response.error;
+      navigate(`/listings/${response.data._id}`);
     } catch (err) {
       console.error(err);
+      const errMsg = getErrorMessage(err);
+      setFormError(errMsg);
     }
   };
 
@@ -330,12 +344,7 @@ const CreateListing = () => {
           >
             {isCreating ? "Creating..." : "Create Listing"}
           </button>
-          {!!formError ||
-            (creationError && (
-              <p className="text-red-700 text-sm">
-                {formError || creationError}
-              </p>
-            ))}
+          {!!formError && <p className="text-red-700 text-sm">{formError}</p>}
         </div>
       </form>
     </main>
