@@ -66,6 +66,7 @@ const listingSchema = new mongoose.Schema<ListingDocument>(
     },
     type: {
       type: String,
+      enum: Object.values(ListingType),
       required: true
     },
     imageUrls: {

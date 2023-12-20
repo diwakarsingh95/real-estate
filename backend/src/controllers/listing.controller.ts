@@ -44,3 +44,22 @@ export const deleteListing = async (
     next(error);
   }
 };
+
+export const updateListing = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { listingId } = req.params;
+    const userId = (req as CustomRequest).user.id;
+    const udpatedListing = await listingService.updateListing(
+      listingId,
+      userId,
+      req.body
+    );
+    res.status(200).json(udpatedListing);
+  } catch (error) {
+    next(error);
+  }
+};

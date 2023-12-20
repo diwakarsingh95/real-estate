@@ -10,6 +10,7 @@ import userRouter from "./routes/user.route";
 import authRouter from "./routes/auth.route";
 import listingRouter from "./routes/listing.route";
 import errorMiddleware from "./middlewares/error.middleware";
+import authMiddleware from "./middlewares/auth.middleware";
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -41,6 +42,6 @@ app.listen(3000, () => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
-app.use("/api/listing", listingRouter);
+app.use("/api/listing", authMiddleware, listingRouter);
 
 app.use(errorMiddleware);
