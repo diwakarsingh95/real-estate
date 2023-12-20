@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useGetListingsQuery } from "../../redux/api/apiSlice";
-import ListingItem from "./ListingItem";
+import ListingItem from "./UserListingItem";
 import { useAppSelector } from "../../hooks";
 import { getErrorMessage } from "../../services/helpers";
 

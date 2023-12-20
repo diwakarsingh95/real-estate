@@ -1,6 +1,6 @@
-import ListingsContent from "./ListingsContent";
+import ListingsContent from "./UserListingsContent";
 
-const AllListings = () => {
+const UserListings = () => {
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Your Listings</h1>
@@ -9,4 +9,4 @@ const AllListings = () => {
   );
 };
 
-export default AllListings;
+export default UserListings;

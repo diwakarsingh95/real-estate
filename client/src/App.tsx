@@ -7,8 +7,9 @@ import Profile from "./pages/Profile";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateListing from "./pages/CreateListing";
-import AllListings from "./pages/AllListings";
+import UserListings from "./pages/UserListings";
 import EditListing from "./pages/EditListing";
+import Listing from "./pages/Listing";
 
 const App = () => {
   return (
@@ -19,11 +20,12 @@ const App = () => {
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/about" element={<About />} />
+        <Route path="/listing/:id" element={<Listing />} />
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-listing" element={<CreateListing />} />
           <Route path="/edit-listing/:id" element={<EditListing />} />
-          <Route path="/listings" element={<AllListings />} />
+          <Route path="/listings" element={<UserListings />} />
         </Route>
       </Routes>
     </BrowserRouter>
