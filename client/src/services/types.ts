@@ -29,3 +29,18 @@ export type Listing = {
   imageUrls: string[];
   userRef: string;
 };
+
+export type ListingFormData = {
+  imageUrls: string[];
+  name: string;
+  description: string;
+  address: string;
+  type: string;
+  bedrooms: number;
+  bathrooms: number;
+  regularPrice: number;
+  discountPrice: number;
+  offer: boolean;
+  parking: boolean;
+  furnished: boolean;
+};

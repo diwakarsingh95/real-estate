@@ -9,7 +9,7 @@ export const listingsApi = createApi({
     getListings: builder.query<Listing[], string>({
       query: () => "",
       keepUnusedDataFor: 300,
-      providesTags: ["Listings"],
+      providesTags: ["Listings"]
       // providesTags: (result) =>
       //   result
       //     ? [...result.map(({ _id }) => ({ type: "Listings", id: _id }))]
@@ -17,9 +17,9 @@ export const listingsApi = createApi({
     }),
     createListing: builder.mutation<Listing, Partial<Listing>>({
       query: (body) => ({
-        url: "create",
+        url: "/create",
         method: "POST",
-        body,
+        body
       }),
       async onQueryStarted({ userRef }, { dispatch, queryFulfilled }) {
         let updateResult;
@@ -37,13 +37,40 @@ export const listingsApi = createApi({
         } catch {
           if (updateResult) updateResult.undo();
         }
-      },
+      }
+    }),
+    updateListing: builder.mutation<Listing, Partial<Listing>>({
+      query: ({ _id, ...body }) => ({
+        url: `/update/${_id}`,
+        method: "POST",
+        body
+      }),
+      async onQueryStarted({ userRef }, { dispatch, queryFulfilled }) {
+        let patchResult;
+        try {
+          const { data: updatedListing } = await queryFulfilled;
+          patchResult = dispatch(
+            listingsApi.util.updateQueryData(
+              "getListings",
+              userRef as string,
+              (prevListings) => {
+                const index = prevListings.findIndex(
+                  (e) => e._id === updatedListing._id
+                );
+                prevListings.splice(index, 1, updatedListing);
+              }
+            )
+          );
+        } catch {
+          if (patchResult) patchResult.undo();
+        }
+      }
     }),
     deleteListing: builder.mutation({
       query(id) {
         return {
           url: `/delete/${id}`,
-          method: "DELETE",
+          method: "DELETE"
         };
       },
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
@@ -64,14 +91,15 @@ export const listingsApi = createApi({
         } catch (err) {
           console.error("Listing delete Error...", err);
         }
-      },
+      }
       // invalidatesTags: (result, error, id) => [{ type: 'Listings', id }],
-    }),
-  }),
+    })
+  })
 });
 
 export const {
   useGetListingsQuery,
   useCreateListingMutation,
   useDeleteListingMutation,
+  useUpdateListingMutation
 } = listingsApi;

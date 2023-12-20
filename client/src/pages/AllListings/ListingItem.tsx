@@ -38,9 +38,15 @@ const ListingItem = ({ data }: { data: Listing }) => {
         >
           {isLoading ? "Deleting..." : "Delete"}
         </button>
-        <button className="text-green-700 uppercase" disabled={isLoading}>
+        <Link
+          to={`/edit-listing/${data._id}`}
+          className={clsx(
+            "text-green-700 uppercase",
+            isLoading && "pointer-events-none"
+          )}
+        >
           Edit
-        </button>
+        </Link>
       </div>
     </div>
   );
