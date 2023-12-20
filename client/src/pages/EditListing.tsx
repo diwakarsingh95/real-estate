@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
 import {
-  useGetListingsQuery,
+  useGetListingQuery,
   useUpdateListingMutation
 } from "../redux/api/apiSlice";
 import { useAppSelector } from "../hooks";
@@ -13,14 +13,11 @@ const EditListing = () => {
   const { currentUser } = useAppSelector((state) => state.user);
   const [updateListing, { isLoading }] = useUpdateListingMutation();
   const navigate = useNavigate();
-  const { listing } = useGetListingsQuery(currentUser?._id || "", {
-    skip: !currentUser?._id || !id,
-    selectFromResult: ({ data }) => ({
-      listing: data?.find((listing) => listing._id === id)
-    })
+  const { data: listing, error } = useGetListingQuery(id as string, {
+    skip: !id
   });
 
-  if (!listing || !id)
+  if (!listing || !id || error)
     return (
       <p className="text-gray-600 text-xl m-10">
         No listing found. Go to your{" "}

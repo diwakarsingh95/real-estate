@@ -18,6 +18,19 @@ export const getListings = async (
   }
 };
 
+export const getListing = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const listing = await listingService.getListing(req.params.listingId);
+    res.status(200).json(listing);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createListing = async (
   req: Request,
   res: Response,

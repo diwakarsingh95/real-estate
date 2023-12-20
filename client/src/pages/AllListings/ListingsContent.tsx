@@ -9,7 +9,7 @@ const ListingsContent = () => {
   const {
     data: listData,
     error,
-    isLoading,
+    isLoading
   } = useGetListingsQuery(currentUser?._id || "", { skip: !currentUser?._id });
 
   if (isLoading) return <p className="text-gray-600 text-xl">Loading...</p>;

@@ -4,16 +4,20 @@ import { Listing } from "../../services/types";
 export const listingsApi = createApi({
   reducerPath: "listings",
   baseQuery: fetchBaseQuery({ baseUrl: "/api/listing" }),
+  keepUnusedDataFor: 60,
   tagTypes: ["Listings"],
   endpoints: (builder) => ({
     getListings: builder.query<Listing[], string>({
       query: () => "",
-      keepUnusedDataFor: 300,
       providesTags: ["Listings"]
       // providesTags: (result) =>
       //   result
       //     ? [...result.map(({ _id }) => ({ type: "Listings", id: _id }))]
       //     : [],
+    }),
+    getListing: builder.query<Listing, string>({
+      query: (id) => `/${id}`,
+      providesTags: (result, error, id) => [{ type: "Listings", id }]
     }),
     createListing: builder.mutation<Listing, Partial<Listing>>({
       query: (body) => ({
@@ -64,7 +68,10 @@ export const listingsApi = createApi({
         } catch {
           if (patchResult) patchResult.undo();
         }
-      }
+      },
+      invalidatesTags: (result, error, { _id }) => [
+        { type: "Listings", id: _id }
+      ]
     }),
     deleteListing: builder.mutation({
       query(id) {
@@ -99,6 +106,7 @@ export const listingsApi = createApi({
 
 export const {
   useGetListingsQuery,
+  useGetListingQuery,
   useCreateListingMutation,
   useDeleteListingMutation,
   useUpdateListingMutation

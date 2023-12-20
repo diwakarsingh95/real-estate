@@ -1,6 +1,15 @@
 import Listing, { ListingDocument } from "../models/listing.model";
 import { errorHandler } from "../utils/errorHandler";
 
+export async function getListing(id: string) {
+  if (!id) throw errorHandler(404, "No listing found!");
+
+  const listing = await Listing.findById(id);
+  if (!listing) throw errorHandler(404, "No listing found!");
+
+  return listing;
+}
+
 export async function deleteListing(id: string) {
   if (!id) throw errorHandler(404, "No listing found!");
 

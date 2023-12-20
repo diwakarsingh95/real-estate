@@ -124,7 +124,7 @@ const ListingForm = ({ onSubmit, isLoading, data }: ListingFormProps) => {
         );
       setFormError("");
 
-      await onSubmit(formData);
+      onSubmit(formData);
     } catch (err) {
       console.error(err);
       const errMsg = getErrorMessage(err);
