@@ -35,7 +35,7 @@ const EditListing = () => {
       _id: params.id
     });
     if ("error" in response) throw response.error;
-    navigate(`/listings/${response.data._id}`);
+    navigate(`/listing/${response.data._id}`);
   };
 
   return (

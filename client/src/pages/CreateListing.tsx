@@ -15,16 +15,16 @@ const CreateListing = () => {
       userRef: currentUser?._id
     });
     if ("error" in response) throw response.error;
-    navigate(`/listings/${response.data._id}`);
+    navigate(`/listing/${response.data._id}`);
   };
 
   return (
-    <main className="p-3 max-w-4xl mx-auto">
+    <div className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">
         Create a Listing
       </h1>
       <ListingForm onSubmit={handleSubmit} isLoading={isLoading} />
-    </main>
+    </div>
   );
 };
 

@@ -261,7 +261,9 @@ const ListingForm = ({ onSubmit, isLoading, data }: ListingFormProps) => {
             />
             <span className="flex flex-col items-center">
               Regular Price
-              <span className="text-xs">($ / Month)</span>
+              {formData.type === "rent" && (
+                <span className="text-xs">($ / Month)</span>
+              )}
             </span>
           </label>
           {formData.offer && (
@@ -278,7 +280,9 @@ const ListingForm = ({ onSubmit, isLoading, data }: ListingFormProps) => {
               />
               <span className="flex flex-col items-center">
                 Discounted Price
-                <span className="text-xs">($ / Month)</span>
+                {formData.type === "rent" && (
+                  <span className="text-xs">($ / Month)</span>
+                )}
               </span>
             </label>
           )}
