@@ -1,21 +1,17 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
-import {
-  useGetListingQuery,
-  useUpdateListingMutation
-} from "../redux/api/apiSlice";
+import { useUpdateListingMutation } from "../redux/api/apiSlice";
 import { useAppSelector } from "../hooks";
-import { ListingFormData } from "../services/types";
+import { ListingFormData, User } from "../services/types";
+import useGetListingById from "../hooks/useGetListingById";
 
 const EditListing = () => {
   const params = useParams();
   const { id } = params;
   const { currentUser } = useAppSelector((state) => state.user);
+  const { listing, error } = useGetListingById();
   const [updateListing, { isLoading }] = useUpdateListingMutation();
   const navigate = useNavigate();
-  const { data: listing, error } = useGetListingQuery(id as string, {
-    skip: !id
-  });
 
   if (!listing || !id || error)
     return (
@@ -31,10 +27,10 @@ const EditListing = () => {
   const handleSubmit = async (formData: ListingFormData) => {
     const response = await updateListing({
       ...formData,
-      userRef: currentUser?._id,
+      userRef: currentUser as User,
       _id: params.id
     });
-    if ("error" in response) throw response.error;
+    if ("error" in response) return response.error;
     navigate(`/listing/${response.data._id}`);
   };
 

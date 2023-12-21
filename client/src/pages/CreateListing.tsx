@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
 import { useCreateListingMutation } from "../redux/api/apiSlice";
 import { useAppSelector } from "../hooks";
-import { ListingFormData } from "../services/types";
+import { ListingFormData, User } from "../services/types";
 
 const CreateListing = () => {
   const { currentUser } = useAppSelector((state) => state.user);
@@ -12,9 +12,9 @@ const CreateListing = () => {
   const handleSubmit = async (formData: ListingFormData) => {
     const response = await createListing({
       ...formData,
-      userRef: currentUser?._id
+      userRef: currentUser as User
     });
-    if ("error" in response) throw response.error;
+    if ("error" in response) return response.error;
     navigate(`/listing/${response.data._id}`);
   };
 

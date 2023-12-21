@@ -12,7 +12,7 @@ const SignUp = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.id]: e.target.value,
+      [e.target.id]: e.target.value
     }));
   };
 
@@ -23,13 +23,13 @@ const SignUp = () => {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
       const data = await res.json();
       setLoading(false);
-      if (data.success === false) {
+      if (!res.ok) {
         setError(data.message);
         return;
       }

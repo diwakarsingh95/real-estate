@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import Listing from "../models/listing.model";
+import Listing, { ListingDocument } from "../models/listing.model";
 import { CustomRequest } from "../middlewares/auth.middleware";
 import * as listingService from "../services/listing.service";
+import { UserDocument } from "../models/user.model";
 
 export const getListings = async (
   req: Request,
@@ -9,9 +10,10 @@ export const getListings = async (
   next: NextFunction
 ) => {
   try {
-    const listings = await Listing.find({
-      userRef: (req as CustomRequest).user.id
-    });
+    const listings = await Listing.find()
+      .populate<{ user: UserDocument }>("userRef")
+      .orFail();
+
     res.status(200).json(listings);
   } catch (error) {
     next(error);
@@ -31,6 +33,22 @@ export const getListing = async (
   }
 };
 
+export const getUserListings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const listings = await Listing.find({
+      userRef: (req as CustomRequest).user.id
+    });
+
+    res.status(200).json(listings);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createListing = async (
   req: Request,
   res: Response,
@@ -38,6 +56,7 @@ export const createListing = async (
 ) => {
   try {
     const listing = await Listing.create(req.body);
+    await listing.populate<{ owner: UserDocument }>("userRef");
     res.status(201).json(listing);
   } catch (error) {
     next(error);

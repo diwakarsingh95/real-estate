@@ -1,10 +1,12 @@
+import mongoose from "mongoose";
 import Listing, { ListingDocument } from "../models/listing.model";
+import { UserDocument } from "../models/user.model";
 import { errorHandler } from "../utils/errorHandler";
 
 export async function getListing(id: string) {
   if (!id) throw errorHandler(404, "No listing found!");
 
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate("userRef");
   if (!listing) throw errorHandler(404, "No listing found!");
 
   return listing;
@@ -30,8 +32,10 @@ export async function updateListing(
 ) {
   if (!id) throw errorHandler(404, "No listing found!");
 
-  const listing = await Listing.findById(id).where({ userRef: userId });
-  if (!listing) throw errorHandler(404, "No listing found!");
+  const listing = await Listing.findOne({ _id: id });
+
+  if (!listing || userId !== listing?.userRef.toString())
+    throw errorHandler(404, "No listing found!");
 
   const updatedListingData = await Listing.findByIdAndUpdate(id, data, {
     new: true

@@ -17,6 +17,9 @@ export default function authMiddleware(
   next: NextFunction
 ) {
   try {
+    const { url, baseUrl } = req;
+    if (baseUrl.concat(url) === "/api/listing/") return next();
+
     const token = req.cookies.access_token;
 
     if (!token) return next(errorHandler(401, "Please authenticate."));
@@ -27,7 +30,6 @@ export default function authMiddleware(
       next();
     } else {
       res.clearCookie("access_token");
-      res.location("/sign-in");
       next(errorHandler(401, "Please authenticate."));
     }
   } catch (err) {

@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from "vite";
 import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
@@ -10,10 +10,10 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api": {
           target: backendUrl,
-          secure: false,
-        },
-      },
+          secure: false
+        }
+      }
     },
-    plugins: [react()],
+    plugins: [react(), splitVendorChunkPlugin()]
   };
 });

@@ -4,7 +4,7 @@ import {
   getDownloadURL,
   getStorage,
   ref,
-  uploadBytesResumable,
+  uploadBytesResumable
 } from "firebase/storage";
 import clsx from "clsx";
 import { app } from "../firebase";
@@ -16,7 +16,7 @@ import {
   signOutUserStart,
   updateUserFailure,
   updateUserStart,
-  updateUserSuccess,
+  updateUserSuccess
 } from "../redux/user/userSlice";
 import { listingsApi } from "../redux/api/apiSlice";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -29,7 +29,7 @@ const Profile = () => {
     username: currentUser?.username,
     email: currentUser?.email,
     password: "",
-    avatar: currentUser?.avatar,
+    avatar: currentUser?.avatar
   });
   const [file, setFile] = useState<File | null>();
   const [fileUploadPercentage, setFileUploadPercentage] = useState(0);
@@ -88,7 +88,7 @@ const Profile = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.id]: e.target.value,
+      [e.target.id]: e.target.value
     }));
   };
 
@@ -103,7 +103,7 @@ const Profile = () => {
 
       const updateData = {
         email,
-        username,
+        username
       } as Partial<typeof formData>;
 
       if (password) updateData.password = password;
@@ -113,13 +113,13 @@ const Profile = () => {
       const res = await fetch(`/api/user/update/${currentUser?._id}`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(updateData),
+        body: JSON.stringify(updateData)
       });
       const data = await res.json();
 
-      if (data.success === false) {
+      if (!res.ok) {
         return dispatch(updateUserFailure(data.message));
       }
 
@@ -138,10 +138,10 @@ const Profile = () => {
       dispatch(deleteUserStart());
 
       const res = await fetch(`/api/user/delete/${currentUser?._id}`, {
-        method: "DELETE",
+        method: "DELETE"
       });
       const data = await res.json();
-      if (data.success === false) {
+      if (!res.ok) {
         return dispatch(deleteUserFailure(data.message));
       }
 
@@ -161,7 +161,7 @@ const Profile = () => {
 
       const res = await fetch("/api/auth/signout");
       const data = await res.json();
-      if (data.success === false) {
+      if (!res.ok) {
         return dispatch(signOutUserFailure(data.message));
       }
 

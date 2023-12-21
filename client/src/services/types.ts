@@ -27,7 +27,8 @@ export type Listing = {
   offer: boolean;
   type: string;
   imageUrls: string[];
-  userRef: string;
+  // userRef: string;
+  userRef: User;
 };
 
 export type ListingFormData = {

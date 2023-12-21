@@ -31,17 +31,16 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log("Connected to MongoDB!");
+    app.listen(3000, () => {
+      console.log(`Server is running on port ${port}!`);
+    });
   })
   .catch((err) => {
-    console.error(err);
+    console.error("MongoDB connection error", err);
   });
 
-app.listen(3000, () => {
-  console.log(`Server is running on port ${port}!`);
-});
-
 app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter);
+app.use("/api/user", authMiddleware, userRouter);
 app.use("/api/listing", authMiddleware, listingRouter);
 
 app.use(errorMiddleware);

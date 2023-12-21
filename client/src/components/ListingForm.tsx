@@ -5,13 +5,17 @@ import {
   ref,
   uploadBytesResumable
 } from "firebase/storage";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
 import { app } from "../firebase";
 import { getErrorMessage } from "../services/helpers";
 import { Listing, ListingFormData } from "../services/types";
 
 type ListingFormProps = {
   data?: Listing;
-  onSubmit: (data: ListingFormData) => void;
+  onSubmit: (
+    formData: ListingFormData
+  ) => Promise<FetchBaseQueryError | SerializedError | undefined>;
   isLoading: boolean;
 };
 
@@ -124,7 +128,8 @@ const ListingForm = ({ onSubmit, isLoading, data }: ListingFormProps) => {
         );
       setFormError("");
 
-      onSubmit(formData);
+      const error = await onSubmit(formData);
+      throw error;
     } catch (err) {
       console.error(err);
       const errMsg = getErrorMessage(err);

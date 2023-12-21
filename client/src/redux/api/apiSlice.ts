@@ -1,23 +1,42 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { Listing } from "../../services/types";
+import baseQueryWithAuth from "./baseQueryWithAuth";
 
 export const listingsApi = createApi({
   reducerPath: "listings",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/listing" }),
-  keepUnusedDataFor: 60,
+  baseQuery: baseQueryWithAuth({ baseUrl: "/api/listing" }),
+  keepUnusedDataFor: 0,
   tagTypes: ["Listings"],
+  invalidationBehavior: "immediately",
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
-    getListings: builder.query<Listing[], string>({
+    getListings: builder.query<Listing[], void>({
       query: () => "",
-      providesTags: ["Listings"]
-      // providesTags: (result) =>
-      //   result
-      //     ? [...result.map(({ _id }) => ({ type: "Listings", id: _id }))]
-      //     : [],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ _id }) => ({ type: "Listings", id: _id }) as const
+              ),
+              { type: "Listings", id: "LIST" }
+            ]
+          : [{ type: "Listings", id: "LIST" }]
     }),
     getListing: builder.query<Listing, string>({
       query: (id) => `/${id}`,
-      providesTags: (result, error, id) => [{ type: "Listings", id }]
+      providesTags: (_result, _error, id) => [{ type: "Listings", id }]
+    }),
+    getUserListings: builder.query<Listing[], void>({
+      query: () => `/userListings`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ _id }) => ({ type: "Listings", id: _id }) as const
+              )
+            ]
+          : []
     }),
     createListing: builder.mutation<Listing, Partial<Listing>>({
       query: (body) => ({
@@ -25,14 +44,15 @@ export const listingsApi = createApi({
         method: "POST",
         body
       }),
-      async onQueryStarted({ userRef }, { dispatch, queryFulfilled }) {
+      invalidatesTags: [{ type: "Listings", id: "LIST" }],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         let updateResult;
         try {
           const { data: createdListing } = await queryFulfilled;
           updateResult = dispatch(
             listingsApi.util.updateQueryData(
               "getListings",
-              userRef as string,
+              undefined,
               (prevListings) => {
                 prevListings.push(createdListing);
               }
@@ -49,14 +69,14 @@ export const listingsApi = createApi({
         method: "POST",
         body
       }),
-      async onQueryStarted({ userRef }, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         let patchResult;
         try {
           const { data: updatedListing } = await queryFulfilled;
           patchResult = dispatch(
             listingsApi.util.updateQueryData(
               "getListings",
-              userRef as string,
+              undefined,
               (prevListings) => {
                 const index = prevListings.findIndex(
                   (e) => e._id === updatedListing._id
@@ -69,7 +89,7 @@ export const listingsApi = createApi({
           if (patchResult) patchResult.undo();
         }
       },
-      invalidatesTags: (result, error, { _id }) => [
+      invalidatesTags: (_result, _error, { _id }) => [
         { type: "Listings", id: _id }
       ]
     }),
@@ -98,8 +118,8 @@ export const listingsApi = createApi({
         } catch (err) {
           console.error("Listing delete Error...", err);
         }
-      }
-      // invalidatesTags: (result, error, id) => [{ type: 'Listings', id }],
+      },
+      invalidatesTags: (_result, _error, id) => [{ type: "Listings", id }]
     })
   })
 });
@@ -109,5 +129,6 @@ export const {
   useGetListingQuery,
   useCreateListingMutation,
   useDeleteListingMutation,
-  useUpdateListingMutation
+  useUpdateListingMutation,
+  useGetUserListingsQuery
 } = listingsApi;

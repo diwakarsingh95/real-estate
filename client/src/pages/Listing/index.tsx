@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import SwiperCore from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -13,10 +14,13 @@ import {
 } from "react-icons/fa";
 import { useGetListingQuery } from "../../redux/api/apiSlice";
 import { getErrorMessage } from "../../services/helpers";
-import { useState } from "react";
+import { useAppSelector } from "../../hooks";
+import ListingContactForm from "./ListingContactForm";
 
 const Listing = () => {
+  SwiperCore.use([Navigation]);
   const { id } = useParams();
+  const { currentUser } = useAppSelector((state) => state.user);
   const {
     data: listing,
     error,
@@ -25,8 +29,8 @@ const Listing = () => {
     skip: !id
   });
   const [copied, setCopied] = useState(false);
-
-  SwiperCore.use([Navigation]);
+  const [contact, setContact] = useState(false);
+  const listingOwner = listing?.userRef;
 
   return (
     <>
@@ -115,6 +119,24 @@ const Listing = () => {
                 {listing.furnished ? "Furnished" : "Unfurnished"}
               </li>
             </ul>
+            {currentUser &&
+              listingOwner &&
+              listingOwner._id &&
+              listingOwner._id !== currentUser._id &&
+              !contact && (
+                <button
+                  onClick={() => setContact(true)}
+                  className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3"
+                >
+                  Contact landlord
+                </button>
+              )}
+            {contact && listingOwner && (
+              <ListingContactForm
+                listingName={listing.name}
+                owner={listingOwner}
+              />
+            )}
           </div>
         </>
       )}

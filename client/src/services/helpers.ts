@@ -27,7 +27,12 @@ export function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
 
   if (isFetchBaseQueryError(error)) {
-    const errMsg = "error" in error ? error.error : JSON.stringify(error.data);
+    const errMsg =
+      "error" in error
+        ? error.error
+        : typeof error.data === "string"
+          ? error.data
+          : "Something went wrong!";
     return errMsg;
   } else if (isErrorWithMessage(error)) return error.message;
 

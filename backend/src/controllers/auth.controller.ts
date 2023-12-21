@@ -35,7 +35,6 @@ export const signIn = async (
       .status(200)
       .json(userInfo);
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -52,7 +51,6 @@ export const googleSignIn = async (
       .status(200)
       .json(userInfo);
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -62,7 +60,6 @@ export const signOut = (req: Request, res: Response, next: NextFunction) => {
     res.clearCookie("access_token");
     res.status(200).json("Logged out successfully!");
   } catch (err) {
-    console.error(err);
     next(err);
   }
 };

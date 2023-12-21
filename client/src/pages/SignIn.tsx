@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   signInFailure,
   signInStart,
-  signInSuccess,
+  signInSuccess
 } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -19,7 +19,7 @@ const SignIn = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.id]: e.target.value,
+      [e.target.id]: e.target.value
     }));
   };
 
@@ -31,12 +31,12 @@ const SignIn = () => {
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
       const data = await res.json();
-      if (data.success === false) {
+      if (!res.ok) {
         dispatch(signInFailure(data.message));
         return;
       }

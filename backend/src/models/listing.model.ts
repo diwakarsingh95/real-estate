@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 enum ListingType {
   SALE = "sale",
@@ -18,7 +18,7 @@ export interface ListingDocument {
   offer: boolean;
   type: ListingType;
   imageUrls: string[];
-  userRef: string;
+  userRef: Types.ObjectId;
   _doc: Omit<this, "_doc">;
 }
 
@@ -74,7 +74,8 @@ const listingSchema = new mongoose.Schema<ListingDocument>(
       required: true
     },
     userRef: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true
     }
   },

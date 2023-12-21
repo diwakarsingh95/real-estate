@@ -1,16 +1,18 @@
 import { Link } from "react-router-dom";
-import { useGetListingsQuery } from "../../redux/api/apiSlice";
 import ListingItem from "./UserListingItem";
-import { useAppSelector } from "../../hooks";
 import { getErrorMessage } from "../../services/helpers";
+import { useAppSelector } from "../../hooks";
+import { useGetUserListingsQuery } from "../../redux/api/apiSlice";
 
 const ListingsContent = () => {
   const { currentUser } = useAppSelector((state) => state.user);
   const {
-    data: listData,
-    error,
-    isLoading
-  } = useGetListingsQuery(currentUser?._id || "", { skip: !currentUser?._id });
+    data: listings,
+    isLoading,
+    error
+  } = useGetUserListingsQuery(undefined, {
+    skip: !currentUser?._id
+  });
 
   if (isLoading) return <p className="text-gray-600 text-xl">Loading...</p>;
   if (error)
@@ -18,8 +20,8 @@ const ListingsContent = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      {listData && listData.length > 0 ? (
-        listData.map((listing) => (
+      {listings && listings.length > 0 ? (
+        listings.map((listing) => (
           <ListingItem key={listing._id} data={listing} />
         ))
       ) : (
