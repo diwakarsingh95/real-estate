@@ -1,9 +1,31 @@
+import React from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import { useAppSelector } from "../hooks";
 
 const Header = () => {
   const { currentUser } = useAppSelector((state) => state.user);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("q");
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const { search } = e.currentTarget;
+    const { value } = search;
+
+    searchParams.set("q", value);
+    setSearchParams(searchParams);
+
+    if (pathname !== "/search") navigate(`/search?${searchParams.toString()}`);
+  };
 
   return (
     <header className="bg-slate-200 shadow-md fixed w-full top-0 z-10">
@@ -14,14 +36,20 @@ const Header = () => {
             <span className="text-slate-700">Estate</span>
           </h1>
         </Link>
-        <form className="bg-slate-100 p-3 rounded-lg flex items-center">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="bg-slate-100 p-3 rounded-lg flex items-center"
+        >
           <input
             type="search"
             placeholder="Search..."
             name="search"
             className="bg-transparent focus:outline-none w-24 sm:w-64"
+            defaultValue={searchQuery || ""}
           />
-          <FaSearch className="text-slate-600" />
+          <button>
+            <FaSearch className="text-slate-600" />
+          </button>
         </form>
         <ul className="flex gap-4">
           <li className="hidden sm:inline text-slate-700 hover:underline">
