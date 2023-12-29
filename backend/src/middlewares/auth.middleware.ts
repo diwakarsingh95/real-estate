@@ -17,8 +17,9 @@ export default function authMiddleware(
   next: NextFunction
 ) {
   try {
-    const { url, baseUrl } = req;
-    if (baseUrl.concat(url) === "/api/listing/") return next();
+    const { originalUrl } = req;
+    const apiRoute = originalUrl.split("?")[0]
+    if (apiRoute === "/api/listing" || apiRoute === "/api/listing/search") return next();
 
     const token = req.cookies.access_token;
 

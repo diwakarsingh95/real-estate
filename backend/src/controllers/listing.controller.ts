@@ -95,3 +95,17 @@ export const updateListing = async (
     next(error);
   }
 };
+
+export const searchListings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const listings = await listingService.searchListing(req.query);
+
+    res.status(200).json(listings);
+  } catch (error) {
+    next(error);
+  }
+};

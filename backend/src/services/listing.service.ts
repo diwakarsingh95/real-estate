@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Listing, { ListingDocument } from "../models/listing.model";
-import { UserDocument } from "../models/user.model";
 import { errorHandler } from "../utils/errorHandler";
 
 export async function getListing(id: string) {
@@ -41,4 +40,43 @@ export async function updateListing(
     new: true
   });
   return updatedListingData;
+}
+
+type SearchProps = {
+  limit: string;
+  offset: string;
+  offer?: false | boolean;
+  furnished?: false | boolean;
+  parking?: boolean;
+  type?: "sale" | "rent";
+  q: string;
+  sortBy?: string;
+  orderBy?: "desc" | "asc";
+};
+
+export async function searchListing(data: any) {
+  const {
+    limit: limitAsString = "9",
+    offset: offsetString = "0",
+    q = "",
+    sortBy = "createdAt",
+    orderBy = "desc",
+    ...rest
+  }: SearchProps = data;
+
+  let limit = parseInt(limitAsString);
+  limit = isNaN(limit) ? 9 : limit;
+  let offset = parseInt(offsetString);
+  offset = isNaN(offset) ? 0 : offset;
+
+  console.log("Data", data);
+
+  const listings = await Listing.find({
+    name: { $regex: q, $options: "i" },
+    ...rest
+  })
+    .sort({ [sortBy]: orderBy })
+    .limit(limit)
+    .skip(offset);
+  return listings;
 }

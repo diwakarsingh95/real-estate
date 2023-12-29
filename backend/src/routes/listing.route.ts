@@ -5,13 +5,15 @@ import {
   getListings,
   updateListing,
   getListing,
-  getUserListings
+  getUserListings,
+  searchListings
 } from "../controllers/listing.controller";
 
 const router = express.Router();
 
 router.get("/", getListings);
 router.get("/userListings", getUserListings);
+router.get("/search", searchListings);
 router.get("/:listingId", getListing);
 router.post("/create", createListing);
 router.post("/update/:listingId", updateListing);
