@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
 import {
   MdKeyboardDoubleArrowUp,
@@ -19,6 +19,10 @@ const Search = () => {
   );
 
   const isMobileView = windowWidth < 768;
+
+  useEffect(() => {
+    if (listings) scrollTo({ top: 0, behavior: "smooth" });
+  }, [listings]);
 
   return (
     <main className="flex flex-col md:flex-row p-2 mt-2 min-h-[calc(100vh-80px)]">
@@ -66,7 +70,9 @@ const Search = () => {
 
           {!isLoading &&
             listings &&
-            listings.map((listing) => <ListingItem listing={listing} />)}
+            listings.map((listing) => (
+              <ListingItem key={listing._id} listing={listing} />
+            ))}
         </div>
       </div>
     </main>

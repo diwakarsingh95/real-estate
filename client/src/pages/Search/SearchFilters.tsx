@@ -19,6 +19,8 @@ const SearchFilters = () => {
     const { target } = e;
     const { name } = target;
 
+    const type = searchParams.get("type");
+
     if (name === "sort") {
       const { value: sortValue } = target;
       if (sortValue) {
@@ -75,8 +77,8 @@ const SearchFilters = () => {
             className="border rounded-lg py-1 px-2 w-fit"
             defaultValue={sortValue ? sortValue : "createdAt_desc"}
           >
-            <option value="price_desc">Price - High to Low</option>
-            <option value="price_asc">Price - Low to High</option>
+            <option value="regularPrice_desc">Price - High to Low</option>
+            <option value="regularPrice_asc">Price - Low to High</option>
             <option value="createdAt_desc">Latest</option>
             <option value="createdAt_asc">Oldest</option>
           </select>
