@@ -10,7 +10,6 @@ const ListingItem = ({ data }: { data: Listing }) => {
 
   return (
     <div
-      key={data._id}
       className={clsx(
         "border rounded-lg p-3 flex justify-between items-center gap-4",
         isLoading && "pointer-events-none opacity-70 transition-opacity"

@@ -9,7 +9,7 @@ const EditListing = () => {
   const params = useParams();
   const { id } = params;
   const { currentUser } = useAppSelector((state) => state.user);
-  const { listing, error } = useGetListingById();
+  const { listing, error } = useGetListingById(id || "");
   const [updateListing, { isLoading }] = useUpdateListingMutation();
   const navigate = useNavigate();
 
