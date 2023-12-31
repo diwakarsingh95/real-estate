@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { Listing } from "../../services/types";
+import { Listing, SearchListingResult } from "../../services/types";
 import baseQueryWithAuth from "./baseQueryWithAuth";
 
 export const listingsApi = createApi({
@@ -121,7 +121,7 @@ export const listingsApi = createApi({
       },
       invalidatesTags: (_result, _error, id) => [{ type: "Listings", id }]
     }),
-    searchListings: builder.query<Listing[], string>({
+    searchListings: builder.query<SearchListingResult, string>({
       query: (searchParams) => `/search?${searchParams}`
     })
   })

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import {
   MdKeyboardDoubleArrowUp,
-  MdKeyboardDoubleArrowDown
+  MdKeyboardDoubleArrowDown,
+  MdArrowRight,
+  MdArrowLeft
 } from "react-icons/md";
 import SearchFilters from "./SearchFilters";
 import useWindowSize from "../../hooks/useWindowSize";
@@ -10,15 +12,29 @@ import { useSearchListingsQuery } from "../../redux/api/apiSlice";
 import { useSearchParams } from "react-router-dom";
 import ListingItem from "../../components/ListingItem";
 
+const LIMIT = 10;
+
 const Search = () => {
   const { width: windowWidth } = useWindowSize();
   const [showFilters, setShowFilter] = useState(false);
-  const [searchParams] = useSearchParams();
-  const { data: listings, isLoading } = useSearchListingsQuery(
-    searchParams.toString()
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const offsetParam = searchParams.get("offset");
+  const { data, isLoading } = useSearchListingsQuery(searchParams.toString());
 
   const isMobileView = windowWidth < 768;
+  const listings = data && data.listings;
+  const hasMore = data && data.hasMore;
+  const offset = offsetParam ? parseInt(offsetParam) : 0;
+
+  const handleNext = () => {
+    searchParams.set("offset", `${offset + LIMIT}`);
+    setSearchParams(searchParams);
+  };
+
+  const handlePrevious = () => {
+    searchParams.set("offset", `${offset - LIMIT}`);
+    setSearchParams(searchParams);
+  };
 
   useEffect(() => {
     if (listings) scrollTo({ top: 0, behavior: "smooth" });
@@ -74,6 +90,27 @@ const Search = () => {
               <ListingItem key={listing._id} listing={listing} />
             ))}
         </div>
+        {listings && (
+          <div className="flex gap-2 justify-center p-2">
+            <button
+              disabled={offset < LIMIT}
+              onClick={handlePrevious}
+              className="text-green-700 p-1 hover:opacity-80 disabled:opacity-50 flex items-center"
+            >
+              <MdArrowLeft className="text-xl" />
+              Previous
+            </button>
+
+            <button
+              disabled={!hasMore}
+              onClick={handleNext}
+              className="text-green-700 p-1 hover:opacity-80 disabled:opacity-50 flex items-center"
+            >
+              Next
+              <MdArrowRight className="text-xl" />
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

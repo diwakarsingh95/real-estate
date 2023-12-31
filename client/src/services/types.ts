@@ -44,3 +44,8 @@ export type ListingFormData = {
   parking: boolean;
   furnished: boolean;
 };
+
+export type SearchListingResult = {
+  listings: Listing[];
+  hasMore: boolean;
+};

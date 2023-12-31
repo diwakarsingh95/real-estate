@@ -55,7 +55,7 @@ type SearchProps = {
 
 export async function searchListing(data: any) {
   const {
-    limit: limitAsString = "9",
+    limit: limitAsString = "10",
     offset: offsetString = "0",
     q = "",
     sortBy = "createdAt",
@@ -77,5 +77,12 @@ export async function searchListing(data: any) {
     .sort({ [sortBy]: orderBy })
     .limit(limit)
     .skip(offset);
-  return listings;
+
+  const totalListingCount = await Listing.countDocuments({
+    name: { $regex: q, $options: "i" },
+    ...rest
+  });
+
+  const hasMore = offset + limit < totalListingCount;
+  return { listings, hasMore };
 }
