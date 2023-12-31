@@ -120,6 +120,9 @@ export const listingsApi = createApi({
         }
       },
       invalidatesTags: (_result, _error, id) => [{ type: "Listings", id }]
+    }),
+    searchListings: builder.query<Listing[], string>({
+      query: (searchParams) => `/search?${searchParams}`
     })
   })
 });
@@ -130,5 +133,6 @@ export const {
   useCreateListingMutation,
   useDeleteListingMutation,
   useUpdateListingMutation,
-  useGetUserListingsQuery
+  useGetUserListingsQuery,
+  useSearchListingsQuery
 } = listingsApi;

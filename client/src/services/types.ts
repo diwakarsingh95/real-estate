@@ -27,7 +27,6 @@ export type Listing = {
   offer: boolean;
   type: string;
   imageUrls: string[];
-  // userRef: string;
   userRef: User;
 };
 

@@ -48,7 +48,7 @@ type SearchProps = {
   offer?: false | boolean;
   furnished?: false | boolean;
   parking?: boolean;
-  type?: "sale" | "rent";
+  type?: "all" | "sale" | "rent";
   q: string;
   sortBy?: string;
   orderBy?: "desc" | "asc";
@@ -69,7 +69,7 @@ export async function searchListing(data: any) {
   let offset = parseInt(offsetString);
   offset = isNaN(offset) ? 0 : offset;
 
-  console.log("Data", data);
+  if (rest.type === "all") delete rest.type;
 
   const listings = await Listing.find({
     name: { $regex: q, $options: "i" },

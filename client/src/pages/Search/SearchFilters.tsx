@@ -5,8 +5,7 @@ const SearchFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sortBy");
   const orderBy = searchParams.get("orderBy");
-  const rent = searchParams.get("rent");
-  const sale = searchParams.get("sale");
+  const type = searchParams.get("type");
   const parking = searchParams.get("parking");
   const furnished = searchParams.get("furnished");
 
@@ -29,10 +28,18 @@ const SearchFilters = () => {
       }
     } else if (name === "rent") {
       const { checked } = target;
-      searchParams.set("rent", `${checked}`);
+      if (checked) {
+        if (type === "sale") searchParams.set("type", "all");
+        else searchParams.set("type", "rent");
+      } else if (type === "all") searchParams.set("type", "sale");
+      else searchParams.delete("type");
     } else if (name === "sale") {
       const { checked } = target;
-      searchParams.set("sale", `${checked}`);
+      if (checked) {
+        if (type === "rent") searchParams.set("type", "all");
+        else searchParams.set("type", "sale");
+      } else if (type === "all") searchParams.set("type", "rent");
+      else searchParams.delete("type");
     } else if (name === "parking") {
       const { checked } = target;
       searchParams.set("parking", `${checked}`);
@@ -48,7 +55,7 @@ const SearchFilters = () => {
   };
 
   return (
-    <section className="p-4">
+    <section className="p-4 mr-2 h-fit">
       <h2 className="text-xl font-semibold mb-3">Filters</h2>
       <form
         onSubmit={handleSubmit}
@@ -83,8 +90,8 @@ const SearchFilters = () => {
               <input
                 type="checkbox"
                 name="rent"
-                className="w-5 h-5"
-                defaultChecked={rent === "true"}
+                className="w-4 h-4"
+                defaultChecked={type === "rent"}
               />{" "}
               Rent
             </label>
@@ -92,8 +99,8 @@ const SearchFilters = () => {
               <input
                 type="checkbox"
                 name="sale"
-                className="w-5 h-5"
-                defaultChecked={sale === "true"}
+                className="w-4 h-4"
+                defaultChecked={type === "sale"}
               />{" "}
               Sale
             </label>
@@ -108,7 +115,7 @@ const SearchFilters = () => {
               <input
                 type="checkbox"
                 name="parking"
-                className="w-5 h-5"
+                className="w-4 h-4"
                 defaultChecked={parking === "true"}
               />{" "}
               Parking
@@ -117,7 +124,7 @@ const SearchFilters = () => {
               <input
                 type="checkbox"
                 name="furnished"
-                className="w-5 h-5"
+                className="w-4 h-4"
                 defaultChecked={furnished === "true"}
               />{" "}
               Furnished
