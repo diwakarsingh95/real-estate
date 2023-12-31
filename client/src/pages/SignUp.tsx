@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getErrorMessage } from "../services/helpers";
+import { getErrorMessage } from "../utils/helpers";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});

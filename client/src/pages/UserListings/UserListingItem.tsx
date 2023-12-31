@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import clsx from "clsx";
 import { useDeleteListingMutation } from "../../redux/api/apiSlice";
-import { Listing } from "../../services/types";
+import { Listing } from "../../utils/types";
 
 const ListingItem = ({ data }: { data: Listing }) => {
   const [deleteListing, { isLoading }] = useDeleteListingMutation();

@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { Listing, SearchListingResult } from "../../services/types";
+import { Listing, ListingsResponse } from "../../utils/types";
 import baseQueryWithAuth from "./baseQueryWithAuth";
 
 export const listingsApi = createApi({
@@ -11,12 +11,12 @@ export const listingsApi = createApi({
   refetchOnFocus: true,
   refetchOnReconnect: true,
   endpoints: (builder) => ({
-    getListings: builder.query<Listing[], void>({
-      query: () => "",
+    getListings: builder.query<ListingsResponse, string>({
+      query: (queryParams) => `/?${queryParams}`,
       providesTags: (result) =>
         result
           ? [
-              ...result.map(
+              ...result.listings.map(
                 ({ _id }) => ({ type: "Listings", id: _id }) as const
               ),
               { type: "Listings", id: "LIST" }
@@ -52,9 +52,9 @@ export const listingsApi = createApi({
           updateResult = dispatch(
             listingsApi.util.updateQueryData(
               "getListings",
-              undefined,
+              "",
               (prevListings) => {
-                prevListings.push(createdListing);
+                prevListings.listings.push(createdListing);
               }
             )
           );
@@ -76,12 +76,12 @@ export const listingsApi = createApi({
           patchResult = dispatch(
             listingsApi.util.updateQueryData(
               "getListings",
-              undefined,
+              "",
               (prevListings) => {
-                const index = prevListings.findIndex(
+                const index = prevListings.listings.findIndex(
                   (e) => e._id === updatedListing._id
                 );
-                prevListings.splice(index, 1, updatedListing);
+                prevListings.listings.splice(index, 1, updatedListing);
               }
             )
           );
@@ -108,8 +108,10 @@ export const listingsApi = createApi({
               "getListings",
               deletedListing.userRef,
               (prevListings) => {
-                prevListings.splice(
-                  prevListings.findIndex((e) => e._id === deletedListing._id),
+                prevListings.listings.splice(
+                  prevListings.listings.findIndex(
+                    (e) => e._id === deletedListing._id
+                  ),
                   1
                 );
               }
@@ -121,7 +123,7 @@ export const listingsApi = createApi({
       },
       invalidatesTags: (_result, _error, id) => [{ type: "Listings", id }]
     }),
-    searchListings: builder.query<SearchListingResult, string>({
+    searchListings: builder.query<ListingsResponse, string>({
       query: (searchParams) => `/search?${searchParams}`
     })
   })

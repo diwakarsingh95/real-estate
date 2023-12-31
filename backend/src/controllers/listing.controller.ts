@@ -10,10 +10,7 @@ export const getListings = async (
   next: NextFunction
 ) => {
   try {
-    const listings = await Listing.find()
-      .populate<{ user: UserDocument }>("userRef")
-      .orFail();
-
+    const listings = await listingService.getListings(req.query);
     res.status(200).json(listings);
   } catch (error) {
     next(error);

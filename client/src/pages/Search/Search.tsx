@@ -41,7 +41,7 @@ const Search = () => {
   }, [listings]);
 
   return (
-    <main className="flex flex-col md:flex-row p-2 mt-2 min-h-[calc(100vh-80px)]">
+    <div className="flex flex-col md:flex-row p-2 mt-2 min-h-[calc(100vh-80px)]">
       <div
         style={{ transition: "height 0.5s, opacity 1s" }}
         className={clsx(
@@ -112,7 +112,7 @@ const Search = () => {
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 };
 

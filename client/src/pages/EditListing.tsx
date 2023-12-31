@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
 import { useUpdateListingMutation } from "../redux/api/apiSlice";
 import { useAppSelector } from "../hooks";
-import { ListingFormData, User } from "../services/types";
+import { ListingFormData, User } from "../utils/types";
 import useGetListingById from "../hooks/useGetListingById";
 
 const EditListing = () => {
@@ -35,14 +35,14 @@ const EditListing = () => {
   };
 
   return (
-    <main className="p-3 max-w-4xl mx-auto">
+    <div className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Edit Listing</h1>
       <ListingForm
         data={listing}
         onSubmit={handleSubmit}
         isLoading={isLoading}
       />
-    </main>
+    </div>
   );
 };
 

@@ -13,7 +13,7 @@ import {
   FaShare
 } from "react-icons/fa";
 import { useGetListingQuery } from "../../redux/api/apiSlice";
-import { getErrorMessage } from "../../services/helpers";
+import { getErrorMessage } from "../../utils/helpers";
 import { useAppSelector } from "../../hooks";
 import ListingContactForm from "./ListingContactForm";
 

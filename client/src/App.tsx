@@ -11,12 +11,13 @@ import UserListings from "./pages/UserListings";
 import EditListing from "./pages/EditListing";
 import Listing from "./pages/Listing";
 import Search from "./pages/Search";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Header />
-      <main className="mt-[72px]">
+      <main className="my-[72px]">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/sign-in" element={<SignIn />} />
@@ -32,6 +33,7 @@ const App = () => {
           </Route>
         </Routes>
       </main>
+      <Footer />
     </BrowserRouter>
   );
 };

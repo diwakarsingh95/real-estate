@@ -1,5 +1,53 @@
 import Listing, { ListingDocument } from "../models/listing.model";
+import { UserDocument } from "../models/user.model";
 import { errorHandler } from "../utils/errorHandler";
+
+type FilterProps = {
+  limit?: string;
+  offset?: string;
+  offer?: false | boolean;
+  furnished?: false | boolean;
+  parking?: boolean;
+  type?: "all" | "sale" | "rent";
+  q?: string;
+  sortBy?: string;
+  orderBy?: "desc" | "asc";
+};
+
+export async function getListings(filters: FilterProps) {
+  const {
+    limit: limitAsString = "10",
+    offset: offsetString = "0",
+    q = "",
+    sortBy = "createdAt",
+    orderBy = "desc",
+    ...rest
+  }: FilterProps = filters;
+
+  let limit = parseInt(limitAsString);
+  limit = isNaN(limit) ? 9 : limit;
+  let offset = parseInt(offsetString);
+  offset = isNaN(offset) ? 0 : offset;
+
+  if (rest.type === "all") delete rest.type;
+
+  let queryParams = {};
+  if (!!q) queryParams = { ...queryParams, name: { $regex: q, $options: "i" } };
+  if (rest) queryParams = { ...queryParams, ...rest };
+
+  const listings = await Listing.find(queryParams)
+    .sort({ [sortBy]: orderBy })
+    .limit(limit)
+    .skip(offset);
+
+  const totalListingCount = await Listing.countDocuments({
+    name: { $regex: q, $options: "i" },
+    ...rest
+  });
+
+  const hasMore = offset + limit < totalListingCount;
+  return { listings, hasMore };
+}
 
 export async function getListing(id: string) {
   if (!id) throw errorHandler(404, "No listing found!");
@@ -41,18 +89,6 @@ export async function updateListing(
   return updatedListingData;
 }
 
-type SearchProps = {
-  limit: string;
-  offset: string;
-  offer?: false | boolean;
-  furnished?: false | boolean;
-  parking?: boolean;
-  type?: "all" | "sale" | "rent";
-  q: string;
-  sortBy?: string;
-  orderBy?: "desc" | "asc";
-};
-
 export async function searchListing(data: any) {
   const {
     limit: limitAsString = "10",
@@ -61,7 +97,7 @@ export async function searchListing(data: any) {
     sortBy = "createdAt",
     orderBy = "desc",
     ...rest
-  }: SearchProps = data;
+  }: FilterProps = data;
 
   let limit = parseInt(limitAsString);
   limit = isNaN(limit) ? 9 : limit;

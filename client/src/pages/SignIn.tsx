@@ -7,7 +7,7 @@ import {
 } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { getErrorMessage } from "../services/helpers";
+import { getErrorMessage } from "../utils/helpers";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { MdLocationOn } from "react-icons/md";
-import { Listing } from "../services/types";
+import { Listing } from "../utils/types";
 import PlaceholderImage from "../assets/image/listing_item_placeholder.png";
 
 type ListingItemProps = {
@@ -9,7 +9,7 @@ type ListingItemProps = {
 
 const ListingItem = ({ listing }: ListingItemProps) => {
   return (
-    <div className="bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]">
+    <div className="bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full">
       <Link to={`/listing/${listing._id}`}>
         <img
           src={(listing.imageUrls && listing.imageUrls[0]) || PlaceholderImage}
@@ -29,7 +29,7 @@ const ListingItem = ({ listing }: ListingItemProps) => {
               {listing.address}
             </p>
           </div>
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm text-gray-600 line-clamp-1">
             {listing.description}
           </p>
           <p className="text-slate-500 mt-2 font-semibold ">

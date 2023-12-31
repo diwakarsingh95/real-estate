@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { User } from "../../services/types";
+import { User } from "../../utils/types";
 
 type ListingContactFormProps = {
   listingName: string;

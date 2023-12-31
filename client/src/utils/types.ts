@@ -45,7 +45,7 @@ export type ListingFormData = {
   furnished: boolean;
 };
 
-export type SearchListingResult = {
+export type ListingsResponse = {
   listings: Listing[];
   hasMore: boolean;
 };

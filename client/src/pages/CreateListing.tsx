@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
 import { useCreateListingMutation } from "../redux/api/apiSlice";
 import { useAppSelector } from "../hooks";
-import { ListingFormData, User } from "../services/types";
+import { ListingFormData, User } from "../utils/types";
 
 const CreateListing = () => {
   const { currentUser } = useAppSelector((state) => state.user);

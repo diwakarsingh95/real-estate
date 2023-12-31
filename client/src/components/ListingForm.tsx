@@ -8,8 +8,8 @@ import {
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
 import { app } from "../firebase";
-import { getErrorMessage } from "../services/helpers";
-import { Listing, ListingFormData } from "../services/types";
+import { getErrorMessage } from "../utils/helpers";
+import { Listing, ListingFormData } from "../utils/types";
 
 type ListingFormProps = {
   data?: Listing;
