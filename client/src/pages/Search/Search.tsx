@@ -90,7 +90,7 @@ const Search = () => {
               <ListingItem key={listing._id} listing={listing} />
             ))}
         </div>
-        {listings && listings.length && (
+        {listings && !!listings.length && (
           <div className="flex gap-2 justify-center p-2">
             <button
               disabled={offset < LIMIT}
