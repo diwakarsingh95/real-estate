@@ -4,9 +4,9 @@
   "description": "Real Estate MERN App",
   "main": "dist/index.js",
   "scripts": {
-    "build": "NODE_ENV=production rimraf ./backend/dist && tsc",
+    "build": "NODE_ENV=production rimraf ./dist && tsc",
     "dev": "nodemon",
-    "start": "node ./backend/dist/index.js"
+    "start": "node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
